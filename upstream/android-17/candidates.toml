@@ -1,0 +1,528 @@
+# Decision records for every fork-only ART commit, android-17 release line.
+# Baseline: AOSP android-17.0.0_r1 (b753cf9792). Generated once from `art_upstream.py analyze`
+# output, then reviewed by hand; `art_upstream.py check` keeps it consistent with the pins.
+# Authors are the upstream authors. Zairenkai did not author any of these patches.
+
+schema_version = 1
+
+[series]
+# Adopted patches, in apply order onto the baseline.
+order = ["aosp-security-70be2043e6", "graphene-09613289ba", "crdroid-f51611098f"]
+
+[[candidate]]
+id = "aosp-security-70be2043e6"
+source = "aosp-security"
+commit = "70be2043e6dbcd080b82022a3dee030de7caad80"
+subject = "Make the runtime-generated app image read-only"
+author = "Nicolas Geoffray"
+date = "2026-05-15"
+files = ["runtime/runtime_image.cc"]
+categories = ["security_hardening"]
+decision = "adopt"
+rationale = "AOSP security fix (Bug 489675413) present on android17-security-release but not in android-17.0.0_r1: the runtime-generated app image is fchmod'ed 0444 right after creation so it cannot be tampered with during generation. Authored upstream by Google; carried unchanged by all three forks."
+validation = "apply-check only (tools/art_upstream.py check); not built, not run: no AOSP platform tree in this environment"
+
+[[candidate]]
+id = "graphene-09613289ba"
+source = "graphene"
+commit = "09613289ba14f60d59a17ff4cad31d1d5dca5c7c"
+subject = "constify JNINativeMethod tables"
+author = "Daniel Micay"
+date = "2023-10-05"
+files = ["runtime/native/dalvik_system_BaseDexClassLoader.cc", "runtime/native/dalvik_system_DexFile.cc", "runtime/native/dalvik_system_VMDebug.cc", "runtime/native/dalvik_system_VMRuntime.cc", "runtime/native/dalvik_system_VMStack.cc", "runtime/native/dalvik_system_ZygoteHooks.cc", "runtime/native/java_lang_Class.cc", "runtime/native/java_lang_Object.cc", "runtime/native/java_lang_StackStreamFactory.cc", "runtime/native/java_lang_String.cc", "runtime/native/java_lang_StringFactory.cc", "runtime/native/java_lang_System.cc", "runtime/native/java_lang_Thread.cc", "runtime/native/java_lang_Throwable.cc", "runtime/native/java_lang_VMClassLoader.cc", "runtime/native/java_lang_invoke_MethodHandle.cc", "runtime/native/java_lang_invoke_MethodHandleImpl.cc", "runtime/native/java_lang_ref_FinalizerReference.cc", "runtime/native/java_lang_ref_Reference.cc", "runtime/native/java_lang_reflect_Array.cc", "runtime/native/java_lang_reflect_Constructor.cc", "runtime/native/java_lang_reflect_Executable.cc", "runtime/native/java_lang_reflect_Field.cc", "runtime/native/java_lang_reflect_Method.cc", "runtime/native/java_lang_reflect_Parameter.cc", "runtime/native/java_lang_reflect_Proxy.cc", "runtime/native/jdk_internal_misc_Unsafe.cc", "runtime/native/jdk_internal_vm_Continuation.cc", "runtime/native/libcore_io_Memory.cc", "runtime/native/libcore_util_CharsetUtils.cc", "runtime/native/org_apache_harmony_dalvik_ddmc_DdmServer.cc", "runtime/native/org_apache_harmony_dalvik_ddmc_DdmVmInternal.cc", "runtime/native/sun_misc_Unsafe.cc", "test/004-JniTest/jni_test.cc", "test/139-register-natives/regnative.cc", "test/2263-method-trace-jit/trace_fib.cc"]
+categories = ["security_hardening"]
+decision = "adopt"
+rationale = "Mechanical 'static JNINativeMethod' -> 'static const JNINativeMethod' in runtime/native and two tests, so the registration tables land in read-only data. No behaviour change; reduces writable function-pointer tables in libart."
+notes = "The sed run that produced it replaced the symlink test/2263-method-trace-jit/trace_fib.cc (-> ../988-method-trace/trace_fib.cc) with a regular-file copy. Harmless for the build, but the copy can drift from 988's file; restoring the symlink is a follow-up before any submission."
+validation = "apply-check only (tools/art_upstream.py check); not built, not run: no AOSP platform tree in this environment"
+
+[[candidate]]
+id = "graphene-55a4cbfd1c"
+source = "graphene"
+commit = "55a4cbfd1c441669ee3dd16a3beede47c87fd4e5"
+subject = "gmscompat: add support for loading DEX files from a file descriptor"
+author = "Dmitry Muhomor"
+date = "2022-03-18"
+files = ["runtime/oat/oat_file_manager.cc"]
+categories = ["rom_specific"]
+decision = "rejected"
+rationale = "Adds file-descriptor DEX loading for GrapheneOS's sandboxed Google Play compatibility layer (gmscompat). Only meaningful together with GrapheneOS frameworks code; widens the DEX loading surface for no benefit on other ROMs."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-97b9f0b7e0"
+source = "graphene"
+commit = "97b9f0b7e09c090f532d0b9048c39cc84b250bde"
+subject = "disable JIT profile saving"
+author = "Dmitry Muhomor"
+date = "2023-10-06"
+files = ["runtime/jit/profile_saver_options.h"]
+categories = ["rom_specific", "jit_aot"]
+decision = "rejected"
+rationale = "Disables JIT profile saving. That removes the input of speed-profile compilation for every app; it is a deliberate GrapheneOS policy trade-off, not a fix, and no measurement supports it for a general build."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-544fee9b5b"
+source = "graphene"
+commit = "544fee9b5be11e408d3ab89e89284691cced6a4b"
+subject = "skip \"speed\"-optimized packages at an earlier dexopt stage"
+author = "Dmitry Muhomor"
+date = "2023-10-23"
+files = ["libartservice/service/java/com/android/server/art/ReasonMapping.java"]
+categories = ["art_service"]
+decision = "blocked"
+rationale = "Changes pre-reboot/background dexopt package filtering in ART Service using GrapheneOS's dexopt policy; part of a series that needs GrapheneOS-specific PackageManagerLocal hooks in frameworks/base. Cannot be built or reasoned about without those."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-51c08d8fd7"
+source = "graphene"
+commit = "51c08d8fd7b9cc4e98c8257bd7a0732649c9a716"
+subject = "always start BackgroundDexoptJob at boot"
+author = "Dmitry Muhomor"
+date = "2023-10-23"
+files = ["libartservice/service/java/com/android/server/art/BackgroundDexoptJob.java"]
+categories = ["art_service", "startup"]
+decision = "deferred"
+rationale = "Starts BackgroundDexoptJob at every boot. Self-contained, but it changes boot-time CPU and battery cost and is the base of the blocked 741eacd8bc. Needs a measured benefit before adoption."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-741eacd8bc"
+source = "graphene"
+commit = "741eacd8bc0cbf1ec1a1a6b01baa6de334d1e779"
+subject = "report progress of the initial BackgroundDexoptJob to PackageManager"
+author = "Dmitry Muhomor"
+date = "2023-10-23"
+files = ["libartservice/service/java/com/android/server/art/BackgroundDexoptJob.java", "libartservice/service/java/com/android/server/art/DexoptHelper.java", "libartservice/service/java/com/android/server/art/DexoptHooks.java"]
+categories = ["art_service"]
+decision = "blocked"
+rationale = "Reports initial BackgroundDexoptJob progress through PackageManagerLocal.onBgDexoptCompleted(), an API that exists only in GrapheneOS frameworks/base."
+depends_on = ["graphene-51c08d8fd7"]
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-b1a63cc68e"
+source = "graphene"
+commit = "b1a63cc68ec61a3df5e71ea60337ce940728c053"
+subject = "ask PackageManager for per-package compiler filter overrides"
+author = "Dmitry Muhomor"
+date = "2023-10-31"
+files = ["libartservice/service/java/com/android/server/art/Dexopter.java"]
+categories = ["art_service"]
+decision = "blocked"
+rationale = "Calls PackageManagerLocal.maybeOverrideCompilerFilter(), a GrapheneOS-only frameworks/base API, to override per-package compiler filters."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-abe3c27eb4"
+source = "graphene"
+commit = "abe3c27eb46b7036a7c77813eb743ba1952d2e3f"
+subject = "sigchainlib: add option to force default handling of MTE SEGV signals"
+author = "Dmitry Muhomor"
+date = "2023-11-28"
+files = ["sigchainlib/sigchain.cc"]
+categories = ["memory_safety"]
+decision = "blocked"
+rationale = "sigchainlib option to force default handling of MTE SEGV; requires the GrapheneOS bionic mallopt M_BIONIC_SIGCHAINLIB_SHOULD_INTERCEPT_MTE_SIGSEGV, which AOSP bionic does not define."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-00b5d21ab1"
+source = "graphene"
+commit = "00b5d21ab15297c1424eadffba9de28990d9ad0e"
+subject = "customize AOT compiler filter adjustment logic"
+author = "Dmitry Muhomor"
+date = "2024-03-15"
+files = ["libartservice/service/java/com/android/server/art/Dexopter.java"]
+categories = ["rom_specific", "art_service"]
+decision = "rejected"
+rationale = "Replaces AOSP's System UI / launcher compiler-filter adjustment with 'speed' for every system package. A storage and install-time trade-off chosen by GrapheneOS; unmeasured here and it removes upstream behaviour."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-f67f38168b"
+source = "graphene"
+commit = "f67f38168bcb7606950f28dab8e35efd0b3c7e60"
+subject = "Revert \"Remove strip.keep_symbols from libart defaults\""
+author = "Dmitry Muhomor"
+date = "2024-03-21"
+files = ["runtime/Android.bp"]
+categories = ["build_system", "observability"]
+decision = "deferred"
+rationale = "Reverts AOSP's removal of strip.keep_symbols from libart defaults (keeps symbols for better native crash stacks at the cost of size). Needs a size measurement and a decision on symbol policy."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-7fe16a53d2"
+source = "graphene"
+commit = "7fe16a53d2780d4a91367a8529c9561eba29828f"
+subject = "add support for blocking InMemoryDexFile class loading API"
+author = "Dmitry Muhomor"
+date = "2024-02-23"
+files = ["runtime/native/dalvik_system_DexFile.cc"]
+categories = ["security_hardening", "dex_verification"]
+decision = "blocked"
+rationale = "Blocks InMemoryDexClassLoader-style loading behind flags set from android.ext.dcl, a GrapheneOS framework package that AOSP does not have."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-2fd67903f1"
+source = "graphene"
+commit = "2fd67903f1b7ac54f2933eafcb31646db71d241f"
+subject = "add support for blocking DexFile class loading API"
+author = "Dmitry Muhomor"
+date = "2024-08-16"
+files = ["runtime/native/dalvik_system_DexFile.cc"]
+categories = ["security_hardening", "dex_verification"]
+decision = "blocked"
+rationale = "Calls android/ext/dcl/DynCodeLoading.checkDexFileOpen from DexFile; that class exists only in GrapheneOS frameworks."
+depends_on = ["graphene-7fe16a53d2"]
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-7be9bb2105"
+source = "graphene"
+commit = "7be9bb21053f933f639f0446c8060372d66b2ac6"
+subject = "use speed-profile compilerFilter for pre-reboot dexopt of 3rd party apps"
+author = "Dmitry Muhomor"
+date = "2024-12-29"
+files = ["libartservice/service/java/com/android/server/art/ReasonMapping.java"]
+categories = ["rom_specific", "art_service"]
+decision = "rejected"
+rationale = "GrapheneOS dexopt policy: speed-profile for pre-reboot dexopt of third-party apps. Policy choice without measurement for this project."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-2c1741d06b"
+source = "graphene"
+commit = "2c1741d06b480bd6886bd8a98615e651e2f7e7c0"
+subject = "raise concurrency from 1 to 2 for pre-reboot and background dexopt"
+author = "Dmitry Muhomor"
+date = "2024-12-29"
+files = ["libartservice/service/java/com/android/server/art/ReasonMapping.java"]
+categories = ["rom_specific", "art_service"]
+decision = "rejected"
+rationale = "Raises pre-reboot and background dexopt concurrency from 1 to 2. On AOSP this is already tunable per reason through pm.dexopt.<reason>.concurrency, so a source change is not needed."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-131dd0fe4e"
+source = "graphene"
+commit = "131dd0fe4e1c0f59a6ed41082ad3271d99ed41b3"
+subject = "allow GmsCompatLibrary code to access platform APIs"
+author = "Dmitry Muhomor"
+date = "2024-11-16"
+files = ["runtime/hidden_api.cc"]
+categories = ["rom_specific"]
+decision = "rejected"
+rationale = "Grants the platform hidden-API domain to GmsCompatLib by file path. GrapheneOS-specific and a privilege grant keyed on a path; not appropriate elsewhere."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-00f0ae3c98"
+source = "graphene"
+commit = "00f0ae3c98579ad103678bb9f7ba14f0a25d6b3b"
+subject = "[temporary] disable asynchronous pre-reboot dexopt"
+author = "Dmitry Muhomor"
+date = "2025-07-20"
+files = ["libartservice/service/java/com/android/server/art/PreRebootDexoptJob.java"]
+categories = ["rom_specific", "art_service"]
+decision = "rejected"
+rationale = "Marked '[temporary]' by its author: disables asynchronous pre-reboot dexopt as a GrapheneOS workaround. No reproducible defect identified on AOSP."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-13061d813a"
+source = "graphene"
+commit = "13061d813a07cd915ca204331a00d355db478991"
+subject = "reduce log level of argv logging"
+author = "Dmitry Muhomor"
+date = "2026-06-09"
+files = ["runtime/parsed_options.cc"]
+categories = ["observability"]
+decision = "deferred"
+rationale = "Lowers runtime argv option logging from INFO to DEBUG. Low risk, but it reduces diagnostics in logcat; needs a decision on log policy."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-0a490e74a7"
+source = "graphene"
+commit = "0a490e74a7520f5557a9729cf3b63e67e121bc8c"
+subject = "Make the runtime-generated app image read-only"
+author = "Nicolas Geoffray"
+date = "2026-05-15"
+files = ["runtime/runtime_image.cc"]
+categories = ["security_hardening"]
+decision = "duplicate"
+rationale = "GrapheneOS cherry-pick of the AOSP app-image read-only fix; patch-id identical to aosp-security 70be2043e6."
+duplicate_of = "aosp-security-70be2043e6"
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "graphene-6a459adafb"
+source = "graphene"
+commit = "6a459adafb78451393b2bfb45e805934df2a3d6b"
+subject = "fixup! gmscompat: add support for loading DEX files from a file descriptor"
+author = "Daniel Micay"
+date = "2026-09-22"
+files = ["runtime/oat/oat_file_manager.cc"]
+categories = ["rom_specific"]
+decision = "rejected"
+rationale = "Fixup of the rejected gmscompat file-descriptor DEX loading change."
+depends_on = ["graphene-55a4cbfd1c"]
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "lineage-747707d6ce"
+source = "lineage"
+commit = "747707d6ce1c145f2249f120c692e0aeb2b8a257"
+subject = "Make the runtime-generated app image read-only"
+author = "Nicolas Geoffray"
+date = "2026-05-15"
+files = ["runtime/runtime_image.cc"]
+categories = ["security_hardening"]
+decision = "duplicate"
+rationale = "LineageOS carries the AOSP app-image read-only fix; patch-id identical to aosp-security 70be2043e6."
+duplicate_of = "aosp-security-70be2043e6"
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-747707d6ce"
+source = "crdroid"
+commit = "747707d6ce1c145f2249f120c692e0aeb2b8a257"
+subject = "Make the runtime-generated app image read-only"
+author = "Nicolas Geoffray"
+date = "2026-05-15"
+files = ["runtime/runtime_image.cc"]
+categories = ["security_hardening"]
+decision = "duplicate"
+rationale = "crDroid inherits the same LineageOS commit; patch-id identical to aosp-security 70be2043e6."
+duplicate_of = "aosp-security-70be2043e6"
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-a868f723dd"
+source = "crdroid"
+commit = "a868f723dd92a2f41709b94f0cb0d407ec5daf40"
+subject = "art: Add support for Cortex-A510"
+author = "Jake Weinstein"
+date = "2023-01-26"
+files = ["runtime/arch/arm/instruction_set_features_arm.cc", "runtime/arch/arm64/instruction_set_features_arm64.cc"]
+categories = ["architecture_abi"]
+decision = "deferred"
+rationale = "Adds cortex-a510 to the arm and arm64 variant tables (crc, lse, fp16, dotprod; no A53 erratum fix). In r1, FromVariant() returns an error for an unknown arm64 variant, so devices configured with cortex-a510 need this or a different configured variant. Feature claims must be checked against Arm's documentation before adoption."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-263fb6cfcf"
+source = "crdroid"
+commit = "263fb6cfcf57f509e675413a45abf308666d2253"
+subject = "Revert \"Remove strip.keep_symbols from libart defaults\""
+author = "Dmitry Muhomor"
+date = "2024-03-21"
+files = ["runtime/Android.bp"]
+categories = ["build_system", "observability"]
+decision = "duplicate"
+rationale = "Same revert of strip.keep_symbols as graphene f67f38168b (identical patch-id)."
+duplicate_of = "graphene-f67f38168b"
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-e72f556642"
+source = "crdroid"
+commit = "e72f556642f5557ecab2648cf8e9f8ea266a76c8"
+subject = "art: add kryo785 architecture variant."
+author = "Sungwook Jung"
+date = "2021-06-09"
+files = ["runtime/arch/arm64/instruction_set_features_arm64.cc"]
+categories = ["architecture_abi"]
+decision = "deferred"
+rationale = "Adds kryo785 to the Cortex-A53 erratum 835769/843419 workaround list (Qualcomm CR 2966364). r1 already knows kryo785 without the workaround; enabling it costs codegen quality and needs evidence that kryo785 SoCs require it."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-a2fd5b9c84"
+source = "crdroid"
+commit = "a2fd5b9c84d4be67ada7f09cdabc4f2a4a9b65cc"
+subject = "art: Disable debug tracing on production builds"
+author = "Danny Lin"
+date = "2021-03-21"
+files = ["libartbase/base/systrace.h"]
+categories = ["observability", "performance"]
+decision = "rejected"
+rationale = "Disables ATrace debug tracing in production builds. Removes Perfetto/systrace visibility for an unmeasured gain."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-ed9c4eecec"
+source = "crdroid"
+commit = "ed9c4eececf49f610f6ce50eb3f10c2cd4f8a7c2"
+subject = "art: Kryo785 supports dotprod"
+author = "minaripenguin37"
+date = "2022-11-15"
+files = ["runtime/arch/arm64/instruction_set_features_arm64.cc"]
+categories = ["architecture_abi"]
+decision = "deferred"
+rationale = "Adds kryo785 to the dotprod variant list (r1 gives kryo785 crc, lse and fp16 only). The dotprod claim must be verified for the cores behind that variant name."
+depends_on = ["crdroid-a868f723dd"]
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-52138fedd5"
+source = "crdroid"
+commit = "52138fedd5107c5a97f0ba5b3c802d3225c4039a"
+subject = "art: Add Kryo585 support"
+author = "Raphiel Rollerscaperers"
+date = "2022-11-15"
+files = ["runtime/arch/arm/instruction_set_features_arm.cc", "runtime/arch/arm64/instruction_set_features_arm64.cc"]
+categories = ["architecture_abi"]
+decision = "deferred"
+rationale = "Adds a kryo585 variant to the arm and arm64 tables. r1 rejects unknown arm64 variants, so this matters only for devices configured with that name; feature data must be verified first."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-f51611098f"
+source = "crdroid"
+commit = "f51611098fea879d29fbdbd279f6b0a98418f0e8"
+subject = "art: add check for __ARM_FEATURE_ATOMICS that indicates LSE atomics availability on target"
+author = "XeonDead"
+date = "2022-08-23"
+files = ["runtime/arch/arm64/instruction_set_features_arm64.cc"]
+categories = ["runtime_correctness", "architecture_abi"]
+decision = "adopt"
+rationale = "r1's Arm64 FromCppDefines() sets lse only if __ARM_ARCH_8_1A__ or __ARM_ARCH_8_2A__ is defined. Clang does not define those macros for any -march tested (NDK r27d clang 18.0.4: armv8-a through armv9-a), so a build for an LSE-capable target reports '-lse' and mismatches the dex2oat features, as the commit message shows. __ARM_FEATURE_ATOMICS is the ACLE macro and is defined for armv8.1-a and later."
+notes = "Macro check: `echo | aarch64-linux-android29-clang -march=<m> -dM -E -` defines __ARM_FEATURE_ATOMICS for armv8.1-a, 8.2-a, 8.5-a, 9-a and not for armv8-a; never __ARM_ARCH_8_1A__/__ARM_ARCH_8_2A__. AOSP's platform clang for android-17 was not checked."
+validation = "apply-check only (tools/art_upstream.py check); not built, not run: no AOSP platform tree in this environment"
+
+[[candidate]]
+id = "crdroid-bb5646abdb"
+source = "crdroid"
+commit = "bb5646abdbc406677a9cb3993da267b84fe5d973"
+subject = "Revert \"Add visibility attributes in runtime/arch\""
+author = "John Galt"
+date = "2024-04-03"
+files = ["runtime/arch/arch_test.cc", "runtime/arch/context-inl.h", "runtime/arch/context.cc", "runtime/arch/context.h", "runtime/arch/instruction_set_features.cc", "runtime/arch/instruction_set_features.h", "runtime/arch/instruction_set_features_test.cc", "runtime/arch/memcmp16.cc", "runtime/arch/memcmp16.h", "runtime/arch/stub_test.cc"]
+categories = ["build_system"]
+decision = "rejected"
+rationale = "Reverts AOSP visibility attributes in runtime/arch; widens exported symbols to support the rejected f1218ce5ac."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-f1218ce5ac"
+source = "crdroid"
+commit = "f1218ce5ac781d8fc8e593de25973729a01b7c9d"
+subject = "ART: dex2oat and instruction_set_features: utilize modified runtime capabilities set"
+author = "XeonDead"
+date = "2022-10-06"
+files = ["dex2oat/dex2oat.cc", "runtime/arch/instruction_set_features.cc"]
+categories = ["architecture_abi", "jit_aot"]
+decision = "rejected"
+rationale = "On arm64, dex2oat replaces the configured instruction-set features (dalvik.vm.isa.arm64.variant/features) with hwcap runtime detection, silently overriding the device configuration and diverging from AOSP's explicit feature model. No test or measurement accompanies it."
+depends_on = ["crdroid-bb5646abdb"]
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-3cdf637f8f"
+source = "crdroid"
+commit = "3cdf637f8fc63738d540a2da2f98f07845881176"
+subject = "art: Optimize the entirity of ART for performance"
+author = "Vaisakh Murali"
+date = "2024-07-06"
+files = ["build/Android.bp"]
+categories = ["performance", "build_system"]
+decision = "rejected"
+rationale = "Builds all of ART with -O3. Code-size and correctness effects are unmeasured; no benchmark accompanies it."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-d4a22d0a08"
+source = "crdroid"
+commit = "d4a22d0a089455918ab2fb37b36161a1505ea2de"
+subject = "optimized hprof speed"
+author = "Guanyou Chen"
+date = "2024-08-06"
+files = ["runtime/hprof/hprof.cc"]
+categories = ["observability"]
+decision = "deferred"
+rationale = "Speeds up hprof heap dumping with a different map structure. Plausible, but it needs the hprof tests and a measurement before adoption."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-5a6a39d5d0"
+source = "crdroid"
+commit = "5a6a39d5d0ba3be694aac737a6a7ff191c41a143"
+subject = "runtime: Disable kCheckDebugDisallowReadBarrierCount"
+author = "rmp22"
+date = "2025-04-02"
+files = ["runtime/read_barrier_config.h"]
+categories = ["runtime_correctness"]
+decision = "rejected"
+rationale = "Disables kCheckDebugDisallowReadBarrierCount: removes a debug-build correctness check."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-0c1a852569"
+source = "crdroid"
+commit = "0c1a852569c889dc44f248a2724a8b1e6f032a9b"
+subject = "gc: Disable dead objects poisoning on debug builds"
+author = "rmp22"
+date = "2025-02-08"
+files = ["runtime/gc/space/region_space.cc"]
+categories = ["gc_memory", "memory_safety"]
+decision = "rejected"
+rationale = "Disables dead-object poisoning on debug builds: removes a memory-safety debugging aid."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-07197785e3"
+source = "crdroid"
+commit = "07197785e30fc8435e186c7dab48c7eb4c41e51b"
+subject = "always use speed profile for large apps"
+author = "rmp22"
+date = "2026-06-02"
+files = ["dex2oat/dex2oat.cc"]
+categories = ["rom_specific", "art_service"]
+decision = "rejected"
+rationale = "dex2oat in r1 downgrades very large apps (above dalvik.vm.dex2oat-very-large, passed by artd) to verify; this compiles them speed-profile instead. Storage and compile-time cost are unmeasured, and the threshold is already a per-device property."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-817f0d8c8b"
+source = "crdroid"
+commit = "817f0d8c8b0ee3f1190033bfb85a4cba6e682867"
+subject = "batch cmc sigbus prefetch"
+author = "rmp22"
+date = "2026-07-05"
+files = ["runtime/gc/collector/mark_compact.cc", "runtime/gc/collector/mark_compact.h"]
+categories = ["gc_memory", "performance"]
+decision = "deferred"
+rationale = "Batches CMC (concurrent mark-compact) SIGBUS-driven prefetch. A change in the GC's userfaultfd fault path; high risk, needs GC stress tests and measurement."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-6580aa54a2"
+source = "crdroid"
+commit = "6580aa54a2cb57216ce1784ad2b11c5c7444fa1a"
+subject = "use ldp/stp for arm64 native call args"
+author = "rmp22"
+date = "2026-07-05"
+files = ["compiler/optimizing/code_generator.cc", "compiler/optimizing/code_generator.h", "compiler/optimizing/code_generator_arm64.cc", "compiler/optimizing/code_generator_arm64.h", "compiler/utils/arm64/jni_macro_assembler_arm64.cc"]
+categories = ["compiler_codegen", "performance"]
+decision = "deferred"
+rationale = "Uses ldp/stp for arm64 native call arguments. Codegen change; needs codegen tests and a measured benefit."
+validation = "diff reviewed; not applied"
+
+[[candidate]]
+id = "crdroid-2dff036e72"
+source = "crdroid"
+commit = "2dff036e7261bb5c43e001a148f129f6f219f41f"
+subject = "art: Optimize IsPathologicalCase with unlikely hints"
+author = "Igor Putko"
+date = "2026-07-07"
+files = ["compiler/compiler.cc"]
+categories = ["performance"]
+decision = "rejected"
+rationale = "Adds branch-prediction hints to IsPathologicalCase; an unmeasured micro-optimization."
+validation = "diff reviewed; not applied"

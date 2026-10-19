@@ -1,0 +1,11 @@
+[package]
+name = "zart"
+description = "Read-only ART runtime and dexopt inspection for Android (Zairenkai-ART)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true

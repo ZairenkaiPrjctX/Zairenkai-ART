@@ -1,0 +1,60 @@
+# Pinned ART upstreams for Zairenkai-ART. Updated only by a reviewed change
+# (see docs/UPSTREAM_UPDATE_POLICY.md); `tools/art_upstream.py refs` reports drift.
+schema_version = 1
+
+[release.android-17]
+# API level 37: libartbase/base/sdk_version.h at android-17.0.0_r1 defines kC = 37u as the
+# newest SdkVersion.
+api_level = 37
+# Canonical baseline: the AOSP release tag android-17.0.0_r1. All three ROM forks are built
+# directly on it. android17-security-release is a *sibling* branch (common ancestor
+# d9ee3abab2): it adds the security fix 70be2043e6 but lacks r1's a6f18f6667 and 11b4b3c68c,
+# so it is tracked as a reference source and its fix is adopted as a patch.
+baseline = "aosp"
+fork_point = "b753cf97923c3695338d21466fa14c57b480a59a"
+
+[[source]]
+name = "aosp"
+role = "canonical"
+url = "https://android.googlesource.com/platform/art"
+release = "android-17"
+ref = "refs/tags/android-17.0.0_r1"                     # tag object fc31298bb6
+commit = "b753cf97923c3695338d21466fa14c57b480a59a"
+license = "Apache-2.0 (MODULE_LICENSE_APACHE2, NOTICE)"
+
+[[source]]
+name = "aosp-security"
+role = "reference"
+url = "https://android.googlesource.com/platform/art"
+release = "android-17"
+ref = "refs/heads/android17-security-release"
+commit = "ecd0dfa4cb728c712af42bdd3ae0640888b29bc3"
+expected_merge_base = "d9ee3abab2daa01e6f7cbb27a2818bc037922886"
+license = "Apache-2.0 (MODULE_LICENSE_APACHE2, NOTICE)"
+
+[[source]]
+name = "graphene"
+role = "reference"
+url = "https://github.com/GrapheneOS/platform_art"
+release = "android-17"
+ref = "refs/heads/17"
+commit = "6a459adafb78451393b2bfb45e805934df2a3d6b"
+license = "Apache-2.0 files; per-commit authorship (see records)"
+
+[[source]]
+name = "lineage"
+role = "reference"
+url = "https://github.com/LineageOS/android_art"
+release = "android-17"
+ref = "refs/heads/lineage-24.0"
+commit = "747707d6ce1c145f2249f120c692e0aeb2b8a257"
+license = "Apache-2.0 files; per-commit authorship (see records)"
+
+[[source]]
+name = "crdroid"
+role = "reference"
+url = "https://github.com/crdroidandroid/android_art"
+release = "android-17"
+ref = "refs/heads/17.0"
+commit = "2dff036e7261bb5c43e001a148f129f6f219f41f"
+license = "Apache-2.0 files; per-commit authorship (see records)"
