@@ -29,5 +29,10 @@ for target in "$@"; do
   var="CARGO_TARGET_$(echo "$target" | tr 'a-z-' 'A-Z_')_LINKER"
   env "$var=$BIN/$clang" cargo build --locked --release --target "$target" -p zart
   cp "target/$target/release/zart" "dist/zart-$VERSION-$abi"
+  if [ "$abi" != armeabi-v7a ]; then # 64-bit targets may run on 16 KB page-size devices
+    for align in $("$BIN/llvm-readelf" -lW "dist/zart-$VERSION-$abi" | awk '$1 == "LOAD" { print $NF }'); do
+      [ $((align)) -ge 16384 ] || { echo "dist/zart-$VERSION-$abi: LOAD segment aligned to $align, need 16 KB" >&2; exit 1; }
+    done
+  fi
 done
 (cd dist && sha256sum zart-"$VERSION"-* | tee SHA256SUMS)

@@ -23,7 +23,7 @@
 | Decision records (39: 3 adopt, 4 duplicate, 6 blocked, 10 deferred, 16 rejected) | `upstream/android-17/candidates.toml` | Verified. Evidence: `art_upstream.py check` → `problems: []` |
 | Upstream tool (Python ≥ 3.11, stdlib) | `tools/art_upstream.py`, `tools/tests/` | Verified. Evidence: 16 tests pass; real runs 2026-10-19 |
 | zart (Rust, MSRV 1.85) | `Cargo.toml`, `crates/zart` | Verified on host and fixtures. Evidence: 26 tests. **Unverified** on a device. |
-| Android build | `scripts/build-android.sh` | Verified. Evidence: NDK r27d, three ABIs, 2026-10-19 |
+| Android build | `scripts/build-android.sh`, `.cargo/config.toml` | Verified. Evidence: NDK r27d, three ABIs; arm64-v8a and x86_64 LOAD segments 16 KB aligned (checked by the script), 2026-10-19 |
 | CI | `.github/workflows/ci.yml` | Verified locally. Evidence: actionlint clean, 2026-10-19. **Unverified** on GitHub. |
 | Docs | `README.md`, `docs/` | Verified. Evidence: files present |
 
