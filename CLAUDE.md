@@ -8,21 +8,42 @@ put detail in `AGENT/`.
 
 ## Current state (read first)
 
-As of 2026-10-18 this repository contained **no source code** (GitHub API 2026-10-18: repository size 0, no branches, no commits; ls-remote returned no refs.).
-Until that changes:
+This repository is **Zairenkai-ART**, an integration project around official AOSP ART
+(Android Runtime). Architecture: `docs/ARCHITECTURE.md`.
+- `upstream/`: pinned upstreams (AOSP `android-17.0.0_r1` baseline; GrapheneOS, LineageOS,
+  crDroid and the AOSP security branch as references) and one decision record per fork-only
+  commit.
+- `tools/art_upstream.py`: upstream analysis and apply-check (Python, stdlib only).
+- `crates/zart`: read-only Rust CLI for Android (`inspect`, `dexopt-status`).
 
-- Do not describe an architecture, language, or toolchain as fact. Record discoveries in
-  `AGENT/PROJECT_CONTEXT.md` with evidence (file paths, manifests, command output).
-- When the first real code lands, update this file's **Commands** table and
-  `AGENT/ARCHITECTURE.md` in the same pull request.
+ART has not been built, and zart has not run on a device (`docs/COMPATIBILITY_MATRIX.md`).
+
+Non-negotiables in this repo:
+- No homegrown runtime labelled ART. Never ship `libart.so`, `dex2oat`, boot images, `.odex`,
+  `.vdex` or `.art` files.
+- zart is read-only. It runs only `getprop` and `cmd package art dump <validated package>`, with
+  no shell, and reports no device identifiers.
+- Never merge a fork wholesale. Every fork-only commit needs a record in
+  `upstream/<release>/candidates.toml`, following `docs/ART_PATCH_PORTING_POLICY.md`. Keep
+  upstream authorship (`cherry-pick -x`).
+- Pins change only by a reviewed edit of `upstream/sources.toml` (`docs/UPSTREAM_UPDATE_POLICY.md`).
+- Never mark a patch built or tested when it was only apply-checked.
+- Tests use fixtures (`SysRoot`, `FakeRunner`, synthetic git repositories), never the host's
+  `/proc`, `/apex` or a device.
 
 ## Commands
 
 | Purpose | Command | Status |
 |---|---|---|
-| Build | — | Not Configured |
-| Test | — | Not Configured |
-| Lint / format | — | Not Configured |
+| Build | `cargo build --workspace` | Verified. Evidence: 2026-10-19 |
+| Test (Rust) | `cargo test --workspace` | Verified. Evidence: 25 passed (22 unit + 3 integration), 2026-10-19 |
+| Test (upstream tool) | `python3 -m unittest discover -s tools/tests` | Verified. Evidence: 16 passed, 2026-10-19 |
+| Lint / format | `cargo clippy --workspace --all-targets -- -D warnings && cargo fmt --all --check` | Verified. Evidence: clean, 2026-10-19 |
+| MSRV | `cargo +1.85.0 test --workspace` | Verified. Evidence: passed, 2026-10-19 |
+| Shell lint | `shellcheck scripts/*.sh` | Verified. Evidence: clean (0.10.0), 2026-10-19 |
+| Android binaries | `ANDROID_NDK_HOME=<ndk> scripts/build-android.sh` | Verified. Evidence: NDK r27d, arm64-v8a/x86_64/armeabi-v7a, 2026-10-19 |
+| Upstream records | `python3 tools/art_upstream.py validate` | Verified. Evidence: ok, 2026-10-19 |
+| Upstream check | `python3 tools/art_upstream.py fetch --workdir W && python3 tools/art_upstream.py check --workdir W` | Verified. Evidence: `problems: []`, series applies, 2026-10-19 |
 | Validate agent foundation | `python3 <path-to-.github>/agent-foundation/scripts/validate_agent_setup.py .` | Configured |
 
 Only list commands that exist in this repository. Never invent one.
