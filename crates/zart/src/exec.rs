@@ -16,6 +16,8 @@ pub enum ExecError {
     NotAllowed(String),
     Spawn(io::Error),
     Timeout,
+    /// Stdout exceeded [`MAX_OUTPUT`]. Reported instead of parsing a truncated prefix.
+    OutputTooLarge,
 }
 
 impl std::fmt::Display for ExecError {
@@ -24,6 +26,7 @@ impl std::fmt::Display for ExecError {
             ExecError::NotAllowed(e) => write!(f, "not allowed: {e}"),
             ExecError::Spawn(e) => write!(f, "spawn failed: {e}"),
             ExecError::Timeout => write!(f, "timed out"),
+            ExecError::OutputTooLarge => write!(f, "output larger than {MAX_OUTPUT} bytes"),
         }
     }
 }
@@ -62,6 +65,16 @@ pub fn check_argv(argv: &[&str]) -> Result<(), ExecError> {
     Ok(())
 }
 
+/// Read at most `cap` bytes and drain the rest. The flag is true when more than `cap` bytes came.
+fn read_capped(mut r: impl Read, cap: usize) -> (Vec<u8>, bool) {
+    let mut buf = Vec::new();
+    let _ = (&mut r).take(cap as u64 + 1).read_to_end(&mut buf);
+    let over = buf.len() > cap;
+    buf.truncate(cap);
+    let _ = io::copy(&mut r, &mut io::sink());
+    (buf, over)
+}
+
 pub trait Runner {
     fn run(&self, argv: &[&str], timeout: Duration) -> Result<Output, ExecError>;
 }
@@ -81,20 +94,10 @@ impl Runner for SystemRunner {
             .stderr(Stdio::piped())
             .spawn()
             .map_err(ExecError::Spawn)?;
-        let mut out = child.stdout.take().expect("piped");
-        let mut err = child.stderr.take().expect("piped");
-        let reader = thread::spawn(move || {
-            let mut buf = Vec::new();
-            let _ = (&mut out).take(MAX_OUTPUT as u64).read_to_end(&mut buf);
-            let _ = io::copy(&mut out, &mut io::sink());
-            buf
-        });
-        let err_reader = thread::spawn(move || {
-            let mut buf = Vec::new();
-            let _ = (&mut err).take(16 * 1024).read_to_end(&mut buf);
-            let _ = io::copy(&mut err, &mut io::sink());
-            buf
-        });
+        let out = child.stdout.take().expect("piped");
+        let err = child.stderr.take().expect("piped");
+        let reader = thread::spawn(move || read_capped(out, MAX_OUTPUT));
+        let err_reader = thread::spawn(move || read_capped(err, 16 * 1024).0);
         let deadline = Instant::now() + timeout;
         let status = loop {
             match child.try_wait().map_err(ExecError::Spawn)? {
@@ -107,9 +110,13 @@ impl Runner for SystemRunner {
                 None => thread::sleep(Duration::from_millis(5)),
             }
         };
+        let (stdout, too_large) = reader.join().unwrap_or_default();
+        if too_large {
+            return Err(ExecError::OutputTooLarge);
+        }
         Ok(Output {
             code: status.code(),
-            stdout: String::from_utf8_lossy(&reader.join().unwrap_or_default()).into_owned(),
+            stdout: String::from_utf8_lossy(&stdout).into_owned(),
             stderr: String::from_utf8_lossy(&err_reader.join().unwrap_or_default())
                 .chars()
                 .take(2000)
@@ -138,7 +145,8 @@ impl FakeRunner {
         self
     }
 
-    /// `"timeout"` simulates a timeout; anything else a spawn failure.
+    /// `"timeout"` simulates a timeout, `"too_large"` oversized output; anything else a spawn
+    /// failure.
     pub fn failing(self, argv: &str, what: &str) -> Self {
         self.outputs
             .lock()
@@ -160,6 +168,7 @@ impl Runner for FakeRunner {
         match self.outputs.lock().unwrap().get(&key) {
             Some(Ok(o)) => Ok(o.clone()),
             Some(Err(e)) if e == "timeout" => Err(ExecError::Timeout),
+            Some(Err(e)) if e == "too_large" => Err(ExecError::OutputTooLarge),
             Some(Err(e)) => Err(ExecError::Spawn(io::Error::other(e.clone()))),
             None => Err(ExecError::Spawn(io::Error::new(
                 io::ErrorKind::NotFound,
@@ -172,6 +181,13 @@ impl Runner for FakeRunner {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn capped_read_flags_overflow() {
+        assert_eq!(read_capped(&b"abc"[..], 3), (b"abc".to_vec(), false));
+        assert_eq!(read_capped(&b"abcd"[..], 3), (b"abc".to_vec(), true));
+        assert_eq!(read_capped(&b""[..], 3), (Vec::new(), false));
+    }
 
     #[test]
     fn allowlist_and_argument_validation() {

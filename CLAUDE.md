@@ -36,7 +36,7 @@ Non-negotiables in this repo:
 | Purpose | Command | Status |
 |---|---|---|
 | Build | `cargo build --workspace` | Verified. Evidence: 2026-10-19 |
-| Test (Rust) | `cargo test --workspace` | Verified. Evidence: 25 passed (22 unit + 3 integration), 2026-10-19 |
+| Test (Rust) | `cargo test --workspace` | Verified. Evidence: 26 passed (23 unit + 3 integration), 2026-10-19 |
 | Test (upstream tool) | `python3 -m unittest discover -s tools/tests` | Verified. Evidence: 16 passed, 2026-10-19 |
 | Lint / format | `cargo clippy --workspace --all-targets -- -D warnings && cargo fmt --all --check` | Verified. Evidence: clean, 2026-10-19 |
 | MSRV | `cargo +1.85.0 test --workspace` | Verified. Evidence: passed, 2026-10-19 |

@@ -27,7 +27,7 @@ As of 2026-10-19. No row is SUPPORTED_AND_TESTED on Android: zart has not run on
 | Item | Status | Evidence |
 |---|---|---|
 | `art_upstream.py` on Linux, Python 3.13, git | SUPPORTED_AND_TESTED | 16 unit tests; real `fetch`, `analyze` and `check` against all five pinned sources, 2026-10-19 |
-| Python 3.11 / 3.12 | SUPPORTED_BUT_NOT_FULLY_TESTED. Stdlib only, uses `tomllib` (3.11+). CI uses Ubuntu 24.04's python3. | CI not yet run |
+| Python 3.11 / 3.12 | SUPPORTED_BUT_NOT_FULLY_TESTED: unit tests and `validate` pass; the networked `fetch`/`check` ran on 3.13 only | 3.11.17 and 3.12.3: 16 tests OK, `validate` ok, 2026-10-19 |
 | Release line android-17 | SUPPORTED_AND_TESTED (records complete, series applies) | `check`: `problems: []` |
 | Other release lines (android-16, …) | UNSUPPORTED: no pins or records | – |
 

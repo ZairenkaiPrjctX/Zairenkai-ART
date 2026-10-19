@@ -118,6 +118,10 @@ garbage line
             get(&props, "ro.build.version.sdk"),
             Obs::Unavailable { .. }
         ));
+        let big = collect(&FakeRunner::default().failing("getprop", "too_large"));
+        assert!(
+            matches!(big, Obs::Unavailable { ref detail, .. } if detail.contains("larger than"))
+        );
         let ok = collect(&FakeRunner::default().with("getprop", 0, GETPROP));
         assert_eq!(get(&ok, "ro.build.version.sdk").get().unwrap(), "37");
         assert!(matches!(
