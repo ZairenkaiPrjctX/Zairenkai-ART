@@ -18,6 +18,37 @@ code copied from ART or from the forks, with one exception: zart's arm64 variant
   tag on 2026-10-21).
 - The source file, revision and that copyright line are cited in `isa.rs` and in `NOTICE`.
   Keep them in every copy of zart.
+- ART's own `NOTICE` at that tag (SHA-256 `613c3a67…405fd`, checked 2026-10-21) begins with
+  "Copyright (c) 2005-2013, The Android Open Source Project", followed by the Apache-2.0 text.
+  Apache-2.0 §4(d) requires that attribution to travel with a derivative work, so `NOTICE`
+  repeats it.
+- `crates/zart/src/cpu.rs` uses Linux UAPI constants (`AT_PAGESZ`, `AT_HWCAP` and five
+  `HWCAP_*` bit positions from `auxvec.h` and `asm/hwcap.h`). These are interface values, not
+  copied code. The UAPI headers carry the Linux-syscall-note exception, which covers their use
+  by user programs.
+
+### Authorship
+
+Checked in `git log`, 2026-10-21:
+- **Content commits:** every content commit was made by Claude Code sessions (author "Claude
+  <noreply@anthropic.com>") run by the maintainer, GitHub `FebriCahyaa`. All but the first
+  agent-foundation commit carry the maintainer's `Signed-off-by`.
+- **Merges:** the remaining commit is the maintainer's GitHub merge of PR #1.
+- **Other contributors:** none.
+
+Anthropic's terms assign to the user whatever rights Anthropic has in Outputs:
+- Consumer Terms, effective 2025-10-08, §4: "we assign to you all of our right, title, and
+  interest—if any—in Outputs", subject to compliance with the terms.
+- Commercial Terms, effective 2025-06-17, §B: the customer "owns its Outputs".
+
+Anthropic therefore claims no rights in this code. The copyright line "ZairenkaiPrjctX
+contributors" refers to the contributors in the history. It names no legal entity and claims no
+exclusive ownership.
+
+**Not settled, and not settled here:** whether, and to what extent, copyright subsists in
+AI-assisted code depends on the jurisdiction and on the human contribution. Apache-2.0 is granted
+to the extent the contributors hold rights. Where no copyright subsists, there is nothing to
+license, and the licence restricts nobody. This record is not legal advice.
 
 Rust dependencies:
 - `serde` and `serde_json`: MIT OR Apache-2.0.

@@ -1,6 +1,9 @@
 Zairenkai-ART
 Copyright 2026 ZairenkaiPrjctX contributors
 
+"ZairenkaiPrjctX contributors" means the contributors recorded in this repository's Git history.
+It does not name a legal entity. See docs/ART_LICENSES.md, "Authorship".
+
 This product includes software developed by the ZairenkaiPrjctX project, licensed under the
 Apache License, Version 2.0 (see LICENSE).
 
@@ -9,6 +12,8 @@ Android Open Source Project, ART runtime/arch/arm64/instruction_set_features_arm
 android-17.0.0_r1:
   Copyright (C) 2014 The Android Open Source Project
   Licensed under the Apache License, Version 2.0.
+Attribution from the NOTICE file of platform/art at android-17.0.0_r1:
+  Copyright (c) 2005-2013, The Android Open Source Project
 
 No other source code from ART or its forks is included. The upstream ART patches recorded in
 upstream/ keep their original authors and AOSP headers and are not part of this repository's
