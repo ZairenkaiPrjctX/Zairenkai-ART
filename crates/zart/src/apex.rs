@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 ZairenkaiPrjctX contributors
 //! The ART module as apexd reports it in `/apex/apex-info-list.xml`.
 //!
 //! Path: `kApexInfoList` in system/apex `apexd/apex_constants.h` (android-17.0.0_r1).

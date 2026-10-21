@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 ZairenkaiPrjctX contributors
 """Tests for tools/art_upstream.py against small synthetic git repositories (no network)."""
 
 from __future__ import annotations

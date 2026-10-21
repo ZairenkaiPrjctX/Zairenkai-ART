@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 ZairenkaiPrjctX contributors
 //! Dexopt status of one package, from ART Service's `art dump PACKAGE` shell command.
 //!
 //! Command: `cmd package art dump PACKAGE` (the `pm art ...` path; `ArtShellCommand.java`,

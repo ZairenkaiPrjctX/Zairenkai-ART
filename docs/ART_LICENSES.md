@@ -4,21 +4,29 @@ This is an engineering record, not legal advice. Have it reviewed before any dis
 
 ## This repository
 
-**No project licence has been chosen.** There is no `LICENSE` file. The code here (`tools/`,
-`crates/zart`, `scripts/`) was written for this project and contains no code copied from ART or
-from the forks, with one exception: zart's arm64 variant tables (`crates/zart/src/isa.rs`).
+**Apache-2.0** (maintainer decision, 2026-10-21): `LICENSE` (the official text), `NOTICE`,
+SPDX headers in every Rust, Python and shell file, and `license = "Apache-2.0"` in Cargo. The
+copyright line follows the organization convention, "Copyright 2026 ZairenkaiPrjctX
+contributors".
+
+The code here (`tools/`, `crates/zart`, `scripts/`) was written for this project and contains no
+code copied from ART or from the forks, with one exception: zart's arm64 variant tables
+(`crates/zart/src/isa.rs`).
 - They copy CPU variant names and their feature flags from ART
   `runtime/arch/arm64/instruction_set_features_arm64.cc` at `android-17.0.0_r1`, which is
-  Apache-2.0.
-- The source file and revision are cited in that module.
-- If the project is distributed under a licence other than Apache-2.0, keep that attribution.
+  Apache-2.0 ("Copyright (C) 2014 The Android Open Source Project", checked in the file at that
+  tag on 2026-10-21).
+- The source file, revision and that copyright line are cited in `isa.rs` and in `NOTICE`.
+  Keep them in every copy of zart.
 
 Rust dependencies:
 - `serde` and `serde_json`: MIT OR Apache-2.0.
 - Transitive dependencies: `serde_core`, `serde_derive`, `itoa`, `memchr`, `zmij`, `proc-macro2`,
   `quote`, `syn`, `unicode-ident`.
-- The full list is in `Cargo.lock`; the licence of each crate is in its crates.io metadata.
-  **Not audited** beyond `serde` and `serde_json`.
+- The full list is in `Cargo.lock`. Every crate compiled into zart for aarch64-linux-android
+  (11) is permissive: MIT OR Apache-2.0, MIT, Unlicense OR MIT, or (MIT OR Apache-2.0) AND
+  Unicode-3.0. Zairenkai-App generates their full licence texts (`rust_notices.py`) and ships
+  them with zart.
 
 The Python tool uses the standard library only.
 

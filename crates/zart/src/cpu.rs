@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 ZairenkaiPrjctX contributors
 //! CPU capabilities and page size from the process auxiliary vector (`/proc/self/auxv`).
 //!
 //! ART's arm64 runtime detection (`Arm64InstructionSetFeatures::FromHwcap`, android-17.0.0_r1)
