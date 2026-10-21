@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 ZairenkaiPrjctX contributors
 //! Observations: every reported value says where it came from, or why it is missing.
 
 use std::io;

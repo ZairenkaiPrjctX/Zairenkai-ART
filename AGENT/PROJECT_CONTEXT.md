@@ -13,7 +13,7 @@
 | Default branch | `dev` | Verified. Evidence: `git branch -a`, 2026-10-19 |
 | Purpose | Android Runtime integration around official AOSP ART: upstream analysis and selective patch adoption (Layer C), plus a read-only on-device inspector (Layer B) | Verified. Evidence: `docs/ARCHITECTURE.md`, `upstream/`, `crates/zart` |
 | Meaning of "ART" | Android Runtime, not artwork | Verified. Evidence: task definition; contents of `upstream/` |
-| Licence | none chosen (no `LICENSE` file) | Verified. Evidence: repository tree; `docs/ART_LICENSES.md` |
+| Licence | Apache-2.0 (`LICENSE`, `NOTICE`, Cargo `license`, SPDX headers); AOSP attribution for the `isa.rs` tables | Verified. Evidence: maintainer decision 2026-10-21; `cargo metadata` reports Apache-2.0; `docs/ART_LICENSES.md` |
 
 ## Contents
 
@@ -60,7 +60,6 @@
 
 ## Open questions
 
-- Which licence should the project use?
 - Who builds the adopted series, and in which tree (`master-art` or a platform tree at r1)?
 - Which device runs zart's first validation?
 - Should the deferred CPU-variant patches (`cortex-a510`, `kryo585`, kryo785 dotprod) be

@@ -73,3 +73,8 @@ python3 tools/art_upstream.py check --workdir /tmp/art-upstream
 | ART interfaces and patch effects | `docs/ART_COMPATIBILITY.md` |
 | Building ART with the series | `docs/ART_BUILD_GUIDE.md` |
 | Licences and provenance | `docs/ART_LICENSES.md` |
+
+## Licence
+
+Apache-2.0 (`LICENSE`). `NOTICE` carries the AOSP attribution for the arm64 variant tables in
+`crates/zart/src/isa.rs`. Details: `docs/ART_LICENSES.md`.

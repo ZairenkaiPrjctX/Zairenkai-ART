@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 ZairenkaiPrjctX contributors
 //! File-system root abstraction (read-only subset of the `SysRoot` used by Zairenkai-Core and
 //! Zairenkai-FAS). Production uses `/`; tests point it at a fixture directory, so no test reads
 //! the host's `/proc` or `/apex`.

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 ZairenkaiPrjctX contributors
 //! `zart inspect`: a read-only report of the ART runtime environment of this device.
 
 use std::collections::BTreeMap;

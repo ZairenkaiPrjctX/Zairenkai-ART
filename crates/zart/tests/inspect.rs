@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 ZairenkaiPrjctX contributors
 //! End-to-end `inspect` against a fixture root and canned `getprop` output (never the host).
 
 use std::path::PathBuf;

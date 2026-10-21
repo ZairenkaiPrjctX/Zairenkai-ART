@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 ZairenkaiPrjctX contributors
 # Cross-compile zart for Android and write checksummed binaries to dist/.
 #
 # Requires: Rust with the Android targets below, and ANDROID_NDK_HOME pointing at an Android
@@ -36,3 +38,4 @@ for target in "$@"; do
   fi
 done
 (cd dist && sha256sum zart-"$VERSION"-* | tee SHA256SUMS)
+cp LICENSE NOTICE dist/ # the binaries carry the AOSP attribution in NOTICE

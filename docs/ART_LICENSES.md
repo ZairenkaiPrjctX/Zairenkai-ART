@@ -4,21 +4,60 @@ This is an engineering record, not legal advice. Have it reviewed before any dis
 
 ## This repository
 
-**No project licence has been chosen.** There is no `LICENSE` file. The code here (`tools/`,
-`crates/zart`, `scripts/`) was written for this project and contains no code copied from ART or
-from the forks, with one exception: zart's arm64 variant tables (`crates/zart/src/isa.rs`).
+**Apache-2.0** (maintainer decision, 2026-10-21): `LICENSE` (the official text), `NOTICE`,
+SPDX headers in every Rust, Python and shell file, and `license = "Apache-2.0"` in Cargo. The
+copyright line follows the organization convention, "Copyright 2026 ZairenkaiPrjctX
+contributors".
+
+The code here (`tools/`, `crates/zart`, `scripts/`) was written for this project and contains no
+code copied from ART or from the forks, with one exception: zart's arm64 variant tables
+(`crates/zart/src/isa.rs`).
 - They copy CPU variant names and their feature flags from ART
   `runtime/arch/arm64/instruction_set_features_arm64.cc` at `android-17.0.0_r1`, which is
-  Apache-2.0.
-- The source file and revision are cited in that module.
-- If the project is distributed under a licence other than Apache-2.0, keep that attribution.
+  Apache-2.0 ("Copyright (C) 2014 The Android Open Source Project", checked in the file at that
+  tag on 2026-10-21).
+- The source file, revision and that copyright line are cited in `isa.rs` and in `NOTICE`.
+  Keep them in every copy of zart.
+- ART's own `NOTICE` at that tag (SHA-256 `613c3a67…405fd`, checked 2026-10-21) begins with
+  "Copyright (c) 2005-2013, The Android Open Source Project", followed by the Apache-2.0 text.
+  Apache-2.0 §4(d) requires that attribution to travel with a derivative work, so `NOTICE`
+  repeats it.
+- `crates/zart/src/cpu.rs` uses Linux UAPI constants (`AT_PAGESZ`, `AT_HWCAP` and five
+  `HWCAP_*` bit positions from `auxvec.h` and `asm/hwcap.h`). These are interface values, not
+  copied code. The UAPI headers carry the Linux-syscall-note exception, which covers their use
+  by user programs.
+
+### Authorship
+
+Checked in `git log`, 2026-10-21:
+- **Content commits:** every content commit was made by Claude Code sessions (author "Claude
+  <noreply@anthropic.com>") run by the maintainer, GitHub `FebriCahyaa`. All but the first
+  agent-foundation commit carry the maintainer's `Signed-off-by`.
+- **Merges:** the remaining commit is the maintainer's GitHub merge of PR #1.
+- **Other contributors:** none.
+
+Anthropic's terms assign to the user whatever rights Anthropic has in Outputs:
+- Consumer Terms, effective 2025-10-08, §4: "we assign to you all of our right, title, and
+  interest—if any—in Outputs", subject to compliance with the terms.
+- Commercial Terms, effective 2025-06-17, §B: the customer "owns its Outputs".
+
+Anthropic therefore claims no rights in this code. The copyright line "ZairenkaiPrjctX
+contributors" refers to the contributors in the history. It names no legal entity and claims no
+exclusive ownership.
+
+**Not settled, and not settled here:** whether, and to what extent, copyright subsists in
+AI-assisted code depends on the jurisdiction and on the human contribution. Apache-2.0 is granted
+to the extent the contributors hold rights. Where no copyright subsists, there is nothing to
+license, and the licence restricts nobody. This record is not legal advice.
 
 Rust dependencies:
 - `serde` and `serde_json`: MIT OR Apache-2.0.
 - Transitive dependencies: `serde_core`, `serde_derive`, `itoa`, `memchr`, `zmij`, `proc-macro2`,
   `quote`, `syn`, `unicode-ident`.
-- The full list is in `Cargo.lock`; the licence of each crate is in its crates.io metadata.
-  **Not audited** beyond `serde` and `serde_json`.
+- The full list is in `Cargo.lock`. Every crate compiled into zart for aarch64-linux-android
+  (11) is permissive: MIT OR Apache-2.0, MIT, Unlicense OR MIT, or (MIT OR Apache-2.0) AND
+  Unicode-3.0. Zairenkai-App generates their full licence texts (`rust_notices.py`) and ships
+  them with zart.
 
 The Python tool uses the standard library only.
 

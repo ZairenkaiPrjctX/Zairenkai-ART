@@ -10,7 +10,7 @@ Done on 2026-10-19. Every statement is labelled **Verified** (with evidence), **
 | History | Two commits, both agent foundation: `b744a1c` (v1.0.0) and `5025919` (v1.1.0) | Verified. Evidence: `git log` |
 | Branches | `dev` (default), topic branch `ccr-63f8aa87-1b0paj` | Verified. Evidence: `git branch -a` |
 | Source code, build files, CI | None | Verified. Evidence: repository tree held only `AGENT/`, `.claude/`, `AGENTS.md`, `CLAUDE.md` and `.gitignore` |
-| Licence | None chosen; no `LICENSE` file | Verified. Evidence: repository tree |
+| Licence | Apache-2.0 since 2026-10-21 (`LICENSE`, `NOTICE`); none before | Verified. Evidence: repository tree |
 | Meaning of "ART" | The foundation listed it as an open question: assets or Android Runtime | Verified. Evidence: previous `AGENT/PROJECT_CONTEXT.md`. The current task settles it as Android Runtime. |
 
 ## 2. Related Zairenkai repositories

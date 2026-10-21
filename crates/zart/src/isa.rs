@@ -1,3 +1,9 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 ZairenkaiPrjctX contributors
+// The arm64 variant tables below are copied from AOSP ART
+// runtime/arch/arm64/instruction_set_features_arm64.cc at android-17.0.0_r1:
+// Copyright (C) 2014 The Android Open Source Project, licensed under the Apache License,
+// Version 2.0. See NOTICE.
 //! Instruction-set configuration for dex2oat, and how it compares with the running CPU.
 //!
 //! artd passes `dalvik.vm.isa.<isa>.variant` and `dalvik.vm.isa.<isa>.features` to dex2oat as

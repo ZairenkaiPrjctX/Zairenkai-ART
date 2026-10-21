@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 ZairenkaiPrjctX contributors
 //! System properties relevant to ART, read through `getprop` and filtered by an allowlist.
 //!
 //! Only build/ABI identity and ART/dexopt configuration are kept. Identifiers such as
