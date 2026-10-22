@@ -19,7 +19,7 @@ Done on 2026-10-19. Every statement is labelled **Verified** (with evidence), **
 |---|---|---|
 | Zairenkai-Core | Control plane. Its module contracts (`docs/MODULES.md`) list ART as a component with no code yet. | Verified. Evidence: Core topic branch `ccr-63f8aa87-1b0paj` |
 | Zairenkai-FAS | Writes cpufreq floors only; no ART interaction | Verified. Evidence: FAS `docs/CAPABILITIES.md` |
-| Zairenkai-App | Intended UI; contains only agent foundation files | Verified. Evidence: checkout on 2026-10-19 |
+| Zairenkai-App | Intended UI; contains only agent foundation files | Verified. Evidence: checkout on 2026-10-19. **Superseded** (2026-10-22): the app now packages and runs zart (see `docs/ARCHITECTURE.md`) |
 
 ## 3. Upstream ART sources
 

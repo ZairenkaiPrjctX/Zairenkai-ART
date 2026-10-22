@@ -9,7 +9,7 @@
 |---|---|---|
 | Repository | `ZairenkaiPrjctX/Zairenkai-ART` | Verified. Evidence: GitHub API |
 | GitHub description | (none set) | Verified. Evidence: GitHub API |
-| Visibility | private | Verified. Evidence: GitHub API |
+| Visibility | public | Verified. Evidence: `list_repos`, 2026-10-22 (earlier entries said private) |
 | Default branch | `dev` | Verified. Evidence: `git branch -a`, 2026-10-19 |
 | Purpose | Android Runtime integration around official AOSP ART: upstream analysis and selective patch adoption (Layer C), plus a read-only on-device inspector (Layer B) | Verified. Evidence: `docs/ARCHITECTURE.md`, `upstream/`, `crates/zart` |
 | Meaning of "ART" | Android Runtime, not artwork | Verified. Evidence: task definition; contents of `upstream/` |
@@ -56,7 +56,10 @@
 - `Zairenkai-Core`: lists ART as a component in `docs/MODULES.md`. No integration exists yet;
   zart's JSON (`schema: 1`) is the intended interface. **Unverified** as a contract until Core
   consumes it.
-- `Zairenkai-App`: intended UI; it contained only agent foundation files on 2026-10-19.
+- `Zairenkai-App`: the Android UI. It packages zart (lock pins `0d8cd72`), runs `zart inspect`
+  and, through root, `zart dexopt-status`, and parses `schema: 1`. Verified. Evidence: App
+  `integration/repository-lock.json` and `integration-core/.../zart/Zart.kt`, 2026-10-22.
+  **Unverified** on a device.
 
 ## Open questions
 
