@@ -7,7 +7,7 @@ not contain a runtime of its own and does not redistribute ART binaries.
 
 | Layer | Meaning | What this repository does there | Status |
 |---|---|---|---|
-| A: app | Unprivileged Android app (`untrusted_app`) | Nothing. An app cannot call ART Service's shell commands, which enforce root or shell (`ArtShellCommand.enforceRootOrShell`). The UI belongs to Zairenkai-App, which has no code yet. A future app consumes zart's JSON (below). | Not implemented |
+| A: app | Unprivileged Android app (`untrusted_app`) | Nothing. An app cannot call ART Service's shell commands, which enforce root or shell (`ArtShellCommand.enforceRootOrShell`). The UI belongs to Zairenkai-App, which packages zart (`lib/<abi>/libzart.so`, ART pinned at `0d8cd72`), runs `zart inspect` as its own uid and `zart dexopt-status` through root, and parses zart's JSON (below) (App `integration-core/.../zart/Zart.kt`, 2026-10-22). | Nothing in this repository; implemented in Zairenkai-App, never run on a device |
 | B: privileged | `shell` uid through `adb`, or root | `zart`: a read-only inspector for ART module, configuration, CPU and dexopt state | Implemented; never run on a device |
 | C: AOSP/ROM | Changes compiled into the ART module | Pinned upstreams, a decision record for every fork-only commit, and an adopted patch series that is apply-checked against `android-17.0.0_r1` | Implemented as source management. **Not built** (needs a platform tree; `ART_BUILD_GUIDE.md`) |
 
