@@ -38,6 +38,11 @@
   adopted. Verified. Evidence: `-dM -E` macro dump, 2026-10-19.
 - **zart has never run on Android.** On a Linux host every Android input reports `unavailable`.
   Verified. Evidence: `zart inspect` on host, 2026-10-19.
+- **Fixture SysRoot reads reject relative and traversal paths.** Verified. Evidence: new unit tests
+  in `crates/zart/src/sysroot.rs`; these protect fixture-root isolation and do not alter Android
+  runtime behaviour. The live ART source refs remain pinned; `art_upstream.py refs` on
+  2026-10-28 reported crdroid's branch moved, which is intentionally not adopted without auditing
+  and recording its new fork-only commits.
 
 ## Authoritative sources
 
