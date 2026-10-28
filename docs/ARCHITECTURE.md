@@ -25,6 +25,7 @@ not contain a runtime of its own and does not redistribute ART binaries.
 | `upstream/android-17/candidates.toml` | One decision record per fork-only commit: author, files, categories, decision, rationale, validation. `[series] order` lists the adopted patches. | Checked by `art_upstream.py check` |
 | `tools/art_upstream.py` | Dev-host tool (Python ≥ 3.11, stdlib only, `git`) with subcommands `validate`, `refs`, `fetch`, `analyze`, `check` | `tools/tests/` (16 tests) |
 | `crates/zart` | Rust CLI for Android (Layer B), read-only | 23 unit + 3 integration tests |
+| `crates/zart/src/sysroot.rs` | Bounded read-only device file access; rejects relative and traversal paths | Fixture tests in `sysroot::tests` |
 | `scripts/build-android.sh` | Cross-builds zart (arm64-v8a, x86_64, armeabi-v7a) into `dist/` with `SHA256SUMS` | NDK r27d build, 2026-10-19 |
 | `.github/workflows/ci.yml` | Python tests and record validation; upstream apply-check; Rust fmt, clippy, tests and MSRV; shellcheck; Android builds | actionlint clean; **not yet run on GitHub** |
 
